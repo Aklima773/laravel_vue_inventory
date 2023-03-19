@@ -1,0 +1,221 @@
+1. composer create-project laravel/laravel_example1
+
+2. composer require laravel/ui
+3. php artisan ui vue --auth
+
+4.npm install
+5. npm run dev
+6.php artisan serve
+7. php artisan migrate
+8. Registration then login
+
+9.Vue, Vue loader and Vue Router install
+
+10.npm install vue@3
+11.npm install vue-loader
+12.npm install vue-router
+
+13. make 2 file in view..a)front b)backend.blade.php
+
+14. web.php->replace welcome with front and replace dashboard with home
+15. app->providers->routeserviceproviders->replace home with dashboard
+16. change homecontroller view -.replace home with dashboard
+
+17.front and back blade 
+
+18.template setting on front and backend
+
+
+19.vue update version er jonno....app.js
+
+require("./bootstrap");
+
+import { createApp } from "vue";
+const app = createApp({});
+
+app.mount("#app");
+
+20. app.mount("#front")
+
+21. create two file in js folder ..a)backApp.vue  b)FrontyApp.vue
+
+
+22. change and update app.js
+
+require("./bootstrap");
+
+import { createApp } from "vue";
+import FrontApp from "./FrontApp.vue";
+
+
+
+const app = createApp(FrontApp);
+
+app.mount("#front");
+
+23. make two folder  a)back_component  b)front_component
+
+24. front.blade.php -><div id="front"></div> cover korte hobe
+
+25. add app.js and app.css in front.blade.php
+
+a)<link href="{{ asset('css/app.css') }}" rel="stylesheet">
+b)<script src="{{ asset('js/app.js') }}" defer></script>
+
+
+26.transfer all code from front.blade.php in frontApp.vue
+
+27. make two routes file a)frontroutes.js  b)backroutes.js
+
+
+**In frontroutes....
+
+import { createRouter, createWebHistory } from "vue-router";
+
+import Home from "./front_component/Home.vue";
+import About from "./front_components/About.vue";
+
+const routes = [
+    { path: "/", component: Home, name: "home.index" },
+    { path: "/about", component: About, name: "about.index" },
+];
+
+const router = createRouter({
+    history: createWebHistory(),
+    routes,
+});
+
+export default router;
+
+
+28. frontroutes import in app.js
+
+import router from "./frontroutes.js"
+app.use(router).mount("#front");
+
+28.make About.vue in front_component folder
+
+29.In web.php..route tek moto paoar jonno
+
+Route::get('/{vue_capture?}', function () {
+    return view('front');
+})->where('vue_capture', '[\/\w\.-]*');
+
+
+30. app.js..
+
+a)import BackApp from "./BackApp.vue";  //root app for backend
+b)const appback = createApp(BackApp);
+
+
+
+////
+
+31. a) login page copy and paste..
+    b) login code replace
+    c)app.css and app.js add and whole part add in id back
+
+32. create a vue file in back_component...Login.vue
+  **import that in backroutes and add in sidebar
+
+33. create auth controller for login and registration
+a) make a function checkuser in AuthController
+
+  public function CheckUser(){
+        return "hello";
+    }
+b)cut all code from login.blade.php paste  on login.vue..and write <router-view/> tag in login.blade.php
+
+
+34. two way binding create er jonno..
+a) input tag er modhe v-model="email" , v-model="password"  use korte hbe and ta show korar jonno...{{email}}
+
+b) and export default {
+data(){
+    return{
+        email:'',
+        password:''
+    }
+}
+
+c)export default-> methods  -> loginsubmit create
+
+methods:{
+    loginSubmit(){
+alert("Hello!");
+
+    }
+}
+
+35. button prevent submit create...
+    <button  class="btn btn-primary btn-user btn-block"  @click.prevent="loginSubmit()" >
+                                    Login
+                                </button>
+
+36. In web.php...
+
+Route::post('/signin', [App\Http\Controllers\AuthController::class, 'CheckUser']);
+
+37. vue er madhome AuthController theke return show korte
+
+38. In AuthController...
+
+ public function CheckUser(Request $request){
+
+        $email = $request->email;
+        $password = $request->password;
+
+        return "You Sent, Email: $email and Password: $password";
+    }
+
+39. laravel auth bdea login create korte...
+
+ public function CheckUser(Request $request){
+       
+     $credentials = $request->only('email','password');
+     $result = Auth::attempt($credentials);
+
+     if($result == true){
+        return response()->json(['msg'=>"success"]);
+     }else{
+        return response()->json(['msg'=>"Failed"]);
+     }
+    }
+
+
+and add msg with response.data.msg
+
+40. email pass correct hole dashboard e redirect kortye...in login.vue
+
+   axios.post('/checkuser', {email:this.email, password:this.password}).then((response)=>{if(response.data.msg =='success'){
+            this.$router.push('dashboard')
+        }else{
+                 alert("Your email or password invalid")
+        }})
+
+
+41. For logout funtion in Topbar.vue
+
+a)   <button class="btn btn-primary" @click.prevent="logoutSubmit">Logout</button>
+b)make a function in AuthController
+
+  public function LogOut(){
+            Auth::logout();
+    }
+
+c)in topbar.vue...
+
+export default {
+
+methods:{
+    logoutSubmit(){
+        axios.post('/logout').then((response)=>this.$router.push('login'));
+
+        // alert("Logout Call"),
+
+
+    }
+}
+
+}
+
